@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+
+    <!-- Variables -->
+    <?define ProductName="AgentGUI" ?>
+	<?define CompanyName="AV Soft" ?>
+    <?define ProductVersion="0.1.2" ?>
+	<?define Win64="yes" ?>
+	<?define Link="https://avsw.ru/"?>
+    <?define ProductCode="C28FC641-3758-4A0C-BB90-3CFF67936A1A"?>
+    <?define UpgradeCode="DD20DDF5-6DBE-4630-8F33-5C895C072029"?>
+    <?define Manufacturer="WixEdit"?>
+    <?define Language="1049"?>
+
+</Include>

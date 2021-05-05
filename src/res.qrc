@@ -1,0 +1,58 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/backwithdark.png</file>
+        <file>resources/benignNotificate.png</file>
+        <file>resources/close.png</file>
+        <file>resources/close-gray.png</file>
+        <file>resources/close-orange.png</file>
+        <file>resources/help.png</file>
+        <file>resources/help_white.png</file>
+        <file>resources/laptop.png</file>
+        <file>resources/laptop_white.png</file>
+        <file>resources/loading.png</file>
+        <file>resources/loading_white.png</file>
+        <file>resources/shield.png</file>
+        <file>resources/shield_white.png</file>
+        <file>resources/SplashMin.png</file>
+        <file>resources/trayIcon.png</file>
+        <file>resources/usb.png</file>
+        <file>resources/usb_white.png</file>
+        <file>resources/window-maximize-white.png</file>
+        <file>resources/window-maximize-gray.png</file>
+        <file>resources/window-minimize.png</file>
+        <file>resources/window-minimize-gray.png</file>
+        <file>resources/window-restore-white.png</file>
+        <file>resources/window-restore-gray.png</file>
+        <file>resources/AVSoft.png</file>
+        <file>resources/Helmet.png</file>
+        <file>resources/Question gray.png</file>
+        <file>resources/Question white.png</file>
+        <file>resources/Cancel gray.png</file>
+        <file>resources/White gray.png</file>
+        <file>resources/minimize_gray.png</file>
+        <file>resources/minimize_white.png</file>
+        <file>resources/CloseBlack.png</file>
+        <file>resources/minimizeBlack.png</file>
+        <file>resources/QuestionBlack.png</file>
+        <file>resources/AVSoft2.png</file>
+        <file>resources/window-restore-black.png</file>
+        <file>resources/window-maximize-black.png</file>
+        <file>resources/doc_icon_gray.png</file>
+        <file>resources/documents_black.png</file>
+        <file>resources/documents_white.png</file>
+        <file>resources/settings_black.png</file>
+        <file>resources/settings_white.png</file>
+        <file>resources/doc_icon_black.png</file>
+        <file>resources/ATHENA_AGENT_EULA.pdf</file>
+        <file>resources/ATHENA_AGENT_HELP.pdf</file>
+        <file>languages/agentui_en.qm</file>
+        <file>languages/agentui_en.ts</file>
+        <file>languages/agentui_ru.qm</file>
+        <file>languages/agentui_ru.ts</file>
+        <file>languages/agentui_fr.qm</file>
+        <file>languages/agentui_fr.ts</file>
+        <file>resources/bell_black.png</file>
+        <file>resources/bell_gray.png</file>
+        <file>resources/bell_white.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BellIndicator</class>
+ <widget class="QFrame" name="BellIndicator">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>44</width>
+    <height>39</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>44</width>
+    <height>39</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>44</width>
+    <height>39</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Frame</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#BellIndicator,
+#BellIndicator[style=&quot;light&quot;]  {
+	background-color: transparent;
+}
+
+#BellIndicator[tab=&quot;showtab&quot;] {
+	border-top-left-radius: 15px;
+	border-bottom-left-radius: 0px;
+	border-top-right-radius: 15px;
+	border-bottom-right-radius: 0px;
+
+	background-color: rgb(102, 102, 102);
+}
+#BellIndicator[tab=&quot;showtab&quot;][style=&quot;light&quot;] {
+	border-top-left-radius: 15px;
+	border-bottom-left-radius: 0px;
+	border-top-right-radius: 15px;
+	border-bottom-right-radius: 0px;
+
+	background-color: rgb(199, 199, 199);
+}</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <spacer name="horizontalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>5</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <spacer name="verticalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QFrame" name="fr_bell">
+       <property name="minimumSize">
+        <size>
+         <width>25</width>
+         <height>25</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">#fr_bell {			
+	background-color: transparent;
+	image: url(:/resources/bell_gray.png); 
+
+/*    icon-size: 20px;*/
+/*
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+        
+	border-radius:5px;
+*/
+}
+
+#fr_bell:hover {
+	image: url(:/resources/bell_white.png);
+}
+
+#fr_bell[style=&quot;light&quot;] { 		 				
+	image: url(:/resources/bell_black.png);
+/*    icon-size: 20px; */
+/*
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+        
+	border-radius:5px;
+*/
+}
+
+#fr_bell:hover[style=&quot;light&quot;] {	
+	image: url(:/resources/bell_gray.png);
+}</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QFrame" name="fr_circle">
+            <property name="minimumSize">
+             <size>
+              <width>12</width>
+              <height>12</height>
+             </size>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">/* есть непрочитанные сообщения */
+/* РЫЖИЙ */
+#fr_circle {
+	background: rgb(230, 120, 75);
+	border: 2px solid rgb(50, 50, 52);
+	border-radius: 6px;
+}
+#fr_circle[style=&quot;light&quot;] {
+	background-color: rgb(255, 150, 110);
+	border: 2px solid rgb(255, 255, 255);
+	border-radius: 6px;
+}
+
+/* все сообщения прочитали */
+/* СЕРЫЙ */
+#fr_circle[msgToRead=&quot;done&quot;] {
+	background: rgb(102, 102, 102);
+	border: 2px solid rgb(50, 50, 52);
+	border-radius: 6px;
+}
+#fr_circle[msgToRead=&quot;done&quot;][style=&quot;light&quot;] {
+	background: rgb(199, 199, 199);
+	border: 2px solid rgb(255, 255, 255);
+	border-radius: 6px;
+}
+
+/* нет сообщений */
+/* нет и  кружка */
+/* Иии, когда мы открываем вкладку - кружок скрываем */
+#fr_circle[msgToRead=&quot;no&quot;] {
+	background-color: transparent;
+	border: none;
+}</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>0</width>
+            <height>6</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <spacer name="horizontalSpacer_3">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>6</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

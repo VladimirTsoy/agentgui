@@ -1,0 +1,155 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+stages:
+  - build
+  - package
+
+build-linux:
+  image: gitlab.avsw.ru:56050/agents/builder/linux:latest
+  stage: build
+  script:
+    - mkdir build && cd build
+    - cmake .. -DATHENA_AGENT_DIR=../AthenaAgent/src
+    - make -j5
+    - mv AgentGUI ${CI_PROJECT_DIR}
+
+  artifacts:
+    paths:
+      - ./AgentGUI
+
+build-win:
+  image: gitlab.avsw.ru:56050/agents/builder/windows:latest
+  stage: build
+  script:
+    - mkdir build && cd build
+    - cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchain/x86_64-w64-mingw32.cmake -DATHENA_AGENT_DIR=../AthenaAgent/src ..
+    - make -j5
+    - mv AgentGUI.exe ${CI_PROJECT_DIR}
+
+    - echo "Deploy lib from Qt"
+    - mkdir -p ${CI_PROJECT_DIR}/Qt/libs
+    - mkdir -p ${CI_PROJECT_DIR}/Qt/plugins
+
+    - cp /usr/x86_64-w64-mingw32/bin/Qt5Gui.dll ${CI_PROJECT_DIR}/Qt/libs/.
+    - cp /usr/x86_64-w64-mingw32/bin/Qt5DBus.dll ${CI_PROJECT_DIR}/Qt/libs/.
+    - cp /usr/x86_64-w64-mingw32/bin/Qt5Widgets.dll ${CI_PROJECT_DIR}/Qt/libs/.
+    - cp /usr/x86_64-w64-mingw32/bin/Qt5Network.dll ${CI_PROJECT_DIR}/Qt/libs/.
+    - cp /usr/x86_64-w64-mingw32/bin/Qt5Core.dll ${CI_PROJECT_DIR}/Qt/libs/.
+    - cp /usr/x86_64-w64-mingw32/bin/Qt5Gui.dll ${CI_PROJECT_DIR}/Qt/libs/.
+
+    - cp -rL /usr/x86_64-w64-mingw32/plugins/platforms ${CI_PROJECT_DIR}/Qt/plugins/.
+
+    - cp /usr/x86_64-w64-mingw32/bin/*crypto*.dll ${CI_PROJECT_DIR}/Qt/libs/.
+    - cp /usr/x86_64-w64-mingw32/bin/*ssl*.dll ${CI_PROJECT_DIR}/Qt/libs/.
+    - cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-posix/libgcc*.dll ${CI_PROJECT_DIR}/Qt/libs/.
+    - cp /usr/lib/gcc/x86_64-w64-mingw32/8.3-posix/libstdc*.dll ${CI_PROJECT_DIR}/Qt/libs/.
+    - cp /usr/x86_64-w64-mingw32/lib/*winpthread*.dll ${CI_PROJECT_DIR}/Qt/libs/.
+
+
+  artifacts:
+    paths:
+      - ./AgentGUI.exe
+      - ./Qt
+      - ./*.dll
+
+
+build-linux-installator:
+  image: gitlab.avsw.ru:56050/agents/builder/linux:latest
+  stage: package
+  needs:
+    - job: build-linux
+      artifacts: true
+  #only:
+  #  - tags
+  # - schedules
+  when:
+    manual
+  script:
+    - TMP_DIR=$(mktemp -d -t ci-XXXXXXXXXX)
+    - mkdir -p $TMP_DIR/opt/AthenaAgentGUI
+    - mkdir -p $TMP_DIR/DEBIAN
+
+    - echo "Deploy libraries from Qt"
+    - QT_LIBS_DIR=$TMP_DIR/opt/AthenaAgentGUI/libs
+    - mkdir -p $QT_LIBS_DIR
+    - cp -L /usr/local/Qt-5.14.1/lib/libQt5Gui.so.5 $QT_LIBS_DIR/.
+    - cp -L /usr/local/Qt-5.14.1/lib/libQt5Core.so.5 $QT_LIBS_DIR/.
+    - cp -L /usr/local/Qt-5.14.1/lib/libQt5Widgets.so.5 $QT_LIBS_DIR/.
+    - cp -L /usr/local/Qt-5.14.1/lib/libQt5Network.so.5 $QT_LIBS_DIR/.
+    - cp -L /usr/local/Qt-5.14.1/lib/libQt5XcbQpa.so.5 $QT_LIBS_DIR/.
+    - cp -L /usr/local/Qt-5.14.1/lib/libQt5DBus.so.5 $QT_LIBS_DIR/.
+
+    - echo "Deploy system libraries"
+    - cp -L /usr/lib/x86_64-linux-gnu/libssl* $QT_LIBS_DIR/.
+    - cp -L /usr/lib/x86_64-linux-gnu/libcrypto* $QT_LIBS_DIR/.
+    - cp -L /usr/lib/x86_64-linux-gnu/libicu* $QT_LIBS_DIR/.
+    - cp -L /usr/lib/x86_64-linux-gnu/libxkbcommon* $QT_LIBS_DIR/.
+    - cp -L /usr/lib/x86_64-linux-gnu/libpcre* $QT_LIBS_DIR/.
+    - cp -L /usr/lib/x86_64-linux-gnu/libdouble-conversion* $QT_LIBS_DIR/.
+    - cp -L /usr/lib/x86_64-linux-gnu/libxcb* $QT_LIBS_DIR/.
+
+    - echo "Deploy platforms from Qt"
+    - QT_PLATFORMS_DIR=$TMP_DIR/opt/AthenaAgentGUI/platforms
+    - mkdir -p $QT_PLATFORMS_DIR
+    - cp -rL /usr/local/Qt-5.14.1/plugins/platforms/* $QT_PLATFORMS_DIR/.
+
+    - echo "Deploy builded elf"
+    - chmod +x AgentGUI
+    - cp AgentGUI $TMP_DIR/opt/AthenaAgentGUI/AgentGUI
+    - cp InstallationFiles/AgentGUI.sh $TMP_DIR/opt/AthenaAgentGUI/AgentGUI.sh
+
+    - echo "Deploy documents"
+    - cp src/resources/ATHENA_AGENT_EULA.pdf $TMP_DIR/opt/AthenaAgentGUI/ATHENA_AGENT_EULA.pdf
+    - cp src/resources/ATHENA_AGENT_HELP.pdf $TMP_DIR/opt/AthenaAgentGUI/ATHENA_AGENT_HELP.pdf
+
+    - echo "Deploy control file"
+    - DEBIAN_CONTROL=$TMP_DIR/DEBIAN/control
+    - touch $DEBIAN_CONTROL
+    - "echo \"Package: AthenaAgentGUI\" >> $DEBIAN_CONTROL"
+    - if [ -z $CI_COMMIT_TAG ]; then CI_COMMIT_TAG="0.0.0-$CI_COMMIT_SHORT_SHA"; fi
+    - "echo \"Version: $CI_COMMIT_TAG\" >> $DEBIAN_CONTROL"
+    - "echo \"Section: misc\" >> $DEBIAN_CONTROL"
+    - "echo \"Architecture: all\" >> $DEBIAN_CONTROL"
+    - "echo \"Maintainer: AVSoft\" >> $DEBIAN_CONTROL"
+    - "echo \"Description: Athena Agent GUI\" >> $DEBIAN_CONTROL"
+
+    - echo "Deploy postinst script"
+    - DEBIAN_POSTINST=$TMP_DIR/DEBIAN/postinst
+    - touch $DEBIAN_POSTINST
+    - echo "ln -s /opt/AthenaAgentGUI/AgentGUI.sh /usr/bin/AgentGUI" >> $DEBIAN_POSTINST
+    - chmod +x $TMP_DIR/DEBIAN/postinst
+
+    - echo "Building Debian package"
+    - dpkg-deb --build $TMP_DIR ${CI_PROJECT_DIR}
+    # - mv $TMP_DIR/*.deb ${CI_PROJECT_DIR}/.
+
+  artifacts:
+    paths:
+      - ./*.deb
+    expire_in: 1 hour
+
+build-windows-installator:
+  image: gitlab.avsw.ru:56050/agents/builder/wix:latest
+  stage: package
+  needs:
+    - job: build-win
+      artifacts: true
+  #only:
+  #  - tags
+  # - schedules
+  when:
+    manual
+  #before_script:
+  script:
+    - cp -r ./WiXFiles/* .
+    
+    - echo "Building msi package (WiX)"
+    - export LANG=ru_RU.UTF-8
+    - candle *.wxs
+    - light *.wixobj -cultures:ru-RU -ext WixUIExtension -sval
+
+  artifacts:
+    paths:
+      - AgentGUI.msi
+    expire_in: 1 hour

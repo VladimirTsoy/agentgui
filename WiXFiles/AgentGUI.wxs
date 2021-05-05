@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <?include Variables.wxi ?>
+    <Product 
+		Id="$(var.ProductCode)" 
+		Name="$(var.ProductName)" 
+		Language="$(var.Language)" 
+		Version="$(var.ProductVersion)" 
+		Manufacturer="$(var.Manufacturer)" 
+		UpgradeCode="$(var.UpgradeCode)"
+		Codepage="1251" >
+        
+		<Package 
+			Description="Windows installer for $(var.ProductName)" 
+			Comments="Execute to install $(var.ProductName)" 
+			Platform="x64" 			
+			InstallerVersion="200"	
+			Compressed="yes"
+			Keywords="Installer, MSI, $(var.ProductName)" />
+<!--			InstallScope="perMachine" -->
+<!--			ReadOnly="yes" -->
+        
+		<Media Id="1" 
+			Cabinet="media1.cab" 
+			EmbedCab="yes" 
+			CompressionLevel="medium" />
+			
+        <Icon Id="AGENT.ICO" SourceFile="Agent-light.ico" />
+        <Property Id="ARPPRODUCTICON" Value="AGENT.ICO" />
+        <Property Id="ARPHELPLINK" Value="$(var.Link)" />
+		
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <!-- Creating program directory and hierarchy of files in "Program Files" -->
+			<Directory Id="ProgramFiles64Folder">
+				<Directory Id="AV_SOFT" Name="$(var.CompanyName)">
+					<Directory Id="AGENTGUI_ISNTALLWIN" Name="$(var.ProductName)">						
+						<!-- Main directory (exe, pdf) -->
+						<Component Id="AGENTGUI.EXE" Win64="$(var.Win64)" DiskId="1" Guid="BF0FEAD9-058E-4749-93EC-6176704D4583">
+							<File Id="AGENTGUI.EXE" Name="AgentGUI.exe" Source="AgentGUI.exe" />
+						</Component>
+						<Component Id="PDF_FILES" Win64="$(var.Win64)" DiskId="1" Guid="96DDBAAC-DD0B-4653-BFEB-55DCE81880ED">
+							<File Id="ATHENA_AGENT_EULA.PDF" Source="ATHENA_AGENT_EULA.pdf" />
+							<File Id="ATHENA_AGENT_HELP.PDF" Source="ATHENA_AGENT_HELP.pdf" />
+						</Component>
+						<!-- Libs dir -->
+						<Component Id="LIBS" Win64="$(var.Win64)" DiskId="1" Guid="A9D9EBCE-8FC6-4F3A-97A9-A922655EDD95">
+							<File Id="LIBCRYPTO_1_1_X64.DLL" Source="Qt\libs\libcrypto-1_1-x64.dll" />
+							<File Id="LIBGCC_S_SEH_1.DLL" Source="Qt\libs\libgcc_s_seh-1.dll" />
+							<File Id="LIBSSL_1_1_X64.DLL" Source="Qt\libs\libssl-1_1-x64.dll" />
+							<File Id="LIBSTDC___6.DLL" Source="Qt\libs\libstdc++-6.dll" />
+							<File Id="LIBWINPTHREAD_1.DLL" Source="Qt\libs\libwinpthread-1.dll" />
+							<File Id="QT5CORE.DLL" Source="Qt\libs\Qt5Core.dll" /><File Id="QT5DBUS.DLL" Source="Qt\libs\Qt5DBus.dll" />
+							<File Id="QT5GUI.DLL" Source="Qt\libs\Qt5Gui.dll" /><File Id="QT5NETWORK.DLL" Source="Qt\libs\Qt5Network.dll" />
+							<File Id="QT5WIDGETS.DLL" Source="Qt\libs\Qt5Widgets.dll" />
+						</Component>
+						<!-- Platfomrs dir -->
+						<Directory Id="PLATFORMS" Name="platforms" FileSource="Qt\plugins\platforms\">
+							<Component Id="PLATFORMS_DLL" Win64="$(var.Win64)" DiskId="1" Guid="8598B046-5B51-4DED-B750-76914CF541F7">
+								<File Id="QDIRECT2D.DLL" Name="qdirect2d.dll" /><File Id="QMINIMAL.DLL" Name="qminimal.dll" />
+								<File Id="QOFFSCREEN.DLL" Name="qoffscreen.dll" /><File Id="QWINDOWS.DLL" Name="qwindows.dll" />
+							</Component>
+						</Directory>
+					</Directory>
+				</Directory>
+			</Directory>
+			
+			<!-- Creating shortcut in Start menu -->
+			<Directory Id="ProgramMenuFolder">
+				<Directory Id="ApplicationProgramsFolder" Name="$(var.CompanyName)">
+					<Component Id="APPLICATION_SHORTCUT" Guid="ABBF4AB2-6821-4EDA-9F65-95C833C8A68E">
+						<Shortcut Id="SHORTCUT_AGENTUI" Name="AthenaAgent" Icon="AGENT.ICO" Description="$(var.ProductName)" Target="[AGENTGUI_ISNTALLWIN]AGENTGUI.EXE" WorkingDirectory="AV_SOFT" />
+						<RemoveFolder Id="ApplicationProgramsFolder" On="uninstall" />
+						<RegistryValue Root="HKCU" Key="Software\$(var.Manufacturer)\$(var.ProductName)" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+					</Component>
+				</Directory>
+			</Directory>
+			<!-- Setting App to automaticly start on system start -->
+			<Directory Id="StartupFolder" Name="Startup">
+				<Component Id="APPLICATION_SHORTCUT_SM" Guid="496F9740-E21F-492E-B1C0-EDECF336C2E6">
+					<Shortcut Id="SHORTCUT_AGENTUI_SM" Name="AthenaAgent" 
+						Icon="AGENT.ICO" 
+						Target="[AGENTGUI_ISNTALLWIN]AGENTGUI.EXE" 
+						Directory="StartupFolder" />				
+					<!-- не устанавливается иконка... -->
+					<RemoveFolder Id="RemoveStartupItems" On="uninstall"/>
+					<RegistryKey Root="HKCU" Key="SOFTWARE\A\B\StartupMenuitem">
+						<RegistryValue Type="string" Value="Default Value"/>
+					</RegistryKey>
+				</Component>
+			</Directory>
+
+			<!-- Writing to registry -->
+			<Component Id="REGISTRY_ENTRIES" Guid="B2860C58-2233-4B0B-94C5-E6FF97BEB4A5">
+				<RegistryKey Root="HKCU" Key="Software\AV Soft\AgentGUI" ForceCreateOnInstall="yes" ForceDeleteOnUninstall="yes" >
+					<RegistryValue Type="integer" Name="SomeIntegerValue" Value="1" KeyPath="yes" />
+					<RegistryValue Type="string" Value="Default Value" />
+				</RegistryKey>
+			</Component>
+		</Directory>
+		
+		<!-- Remove all and tmp-files -->
+		<Feature Id="FEATURE_REMOVE_TMP" Title="Removing temporary files" Level="1">		
+			<Component Id="REMOVE_ALL" Win64="$(var.Win64)" Directory="AGENTGUI_ISNTALLWIN" DiskId="1" Guid="31265A57-732A-4228-85D8-CFA51B08431B">
+				<RemoveFile Id="CLEAR_FILES" Directory="AGENTGUI_ISNTALLWIN" Name="*" On="uninstall" />
+				<RemoveFolder Id="DELETE_DIR" Directory="AGENTGUI_ISNTALLWIN" On="uninstall" />
+			<!--	<util:RemoveFolderEx On="uninstall" Property="AGENTGUI_ISNTALLWIN" /> -->
+			</Component>
+		</Feature>
+
+        <Feature Id="FEATURE_SET_RIGHTS" Title="Setting ACLs" Level="1">
+            <Component Id="GRANT_PERMISSION" Win64="$(var.Win64)" Directory="AGENTGUI_ISNTALLWIN" Guid="333374B0-FFFF-4F9F-8CB1-D9737F658D51">
+                <CreateFolder>
+                    <Permission GenericAll="yes" User="Everyone" />
+                </CreateFolder>
+            </Component>
+        </Feature>
+
+        <Feature Id="MAIN_APPLICATION" Title="Installation of $(var.ProductName)" Level="1">
+            <ComponentRef Id="AGENTGUI.EXE" />
+            <ComponentRef Id="PDF_FILES" />
+            <ComponentRef Id="PLATFORMS_DLL" />
+            <ComponentRef Id="LIBS" />
+			<ComponentRef Id="GRANT_PERMISSION" />
+            <ComponentRef Id="REGISTRY_ENTRIES" />
+            <ComponentRef Id="APPLICATION_SHORTCUT" /> 
+			<ComponentRef Id="APPLICATION_SHORTCUT_SM" />
+        </Feature>
+					
+		<CustomAction Id="EXECUTE_AFTER_FINALIZE"                  
+              FileKey="AGENTGUI.EXE"
+              ExeCommand=""
+			  Execute="commit" 
+              Return="asyncNoWait" />	
+
+  		<InstallExecuteSequence>
+			<Custom Action="EXECUTE_AFTER_FINALIZE" Before="InstallFinalize" >NOT Installed</Custom>
+		</InstallExecuteSequence>	
+		
+        <!-- License file agreement -->
+        <WixVariable Id="WixUILicenseRtf" Overridable="yes" Value="License.rtf" />
+        <!-- Changing install dir -->
+        <Property Id="WIXUI_INSTALLDIR" Value="AGENTGUI_ISNTALLWIN">
+        </Property>
+        <!-- InstallDir windows package -->
+        <UIRef Id="WixUI_InstallDir" />
+        <!-- Add "run app" checkbox at the end of installation -->
+        <!--        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Launch AgentGUI" />  -->
+        <UI />
+    </Product>
+</Wix>
